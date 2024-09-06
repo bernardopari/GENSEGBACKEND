@@ -1,12 +1,11 @@
-// backend/src/index.js
-const express = require('express');
-const { PrismaClient } = require('@prisma/client');
-const cors = require('cors');
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import cors from 'cors';
 
 const app = express();
 const prisma = new PrismaClient();
 
-app.use(cors()); // Para permitir las solicitudes del frontend
+app.use(cors()); // Permite solicitudes del frontend
 app.use(express.json());
 
 // Ruta para obtener todos los proyectos
