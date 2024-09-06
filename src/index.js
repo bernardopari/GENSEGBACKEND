@@ -1,25 +1,30 @@
-// frontend/pages/index.js
-"use client";
-import { useEffect, useState } from 'react';
+// backend/src/index.js
+const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const cors = require('cors');
 
-export default function Home() {
-  const [projects, setProjects] = useState([]);
+const app = express();
+const prisma = new PrismaClient();
 
-  // Obtener proyectos desde el backend
-  useEffect(() => {
-    fetch('http://localhost:4000/projects')
-      .then((response) => response.json())
-      .then((data) => setProjects(data));
-  }, []);
+app.use(cors()); // Para permitir las solicitudes del frontend
+app.use(express.json());
 
-  return (
-    <div>
-      <h1>Projects</h1>
-      <ul>
-        {projects.map((project) => (
-          <li key={project.id}>{project.name} - {project.status}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+// Ruta para obtener todos los proyectos
+app.get('/projects', async (req, res) => {
+  const projects = await prisma.project.findMany();
+  res.json(projects);
+});
+
+// Ruta para crear un nuevo proyecto
+app.post('/projects', async (req, res) => {
+  const { name, status } = req.body;
+  const newProject = await prisma.project.create({
+    data: { name, status },
+  });
+  res.json(newProject);
+});
+
+const port = 4000;
+app.listen(port, () => {
+  console.log(`Backend running on http://localhost:${port}`);
+});
